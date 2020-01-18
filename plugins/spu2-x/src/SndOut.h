@@ -53,11 +53,22 @@ struct Stereo51Out32DplII;
 struct Stereo51Out16Dpl; // similar to DplII but without rear balancing
 struct Stereo51Out32Dpl;
 
+struct Stereo71Out16DplII;
+struct Stereo71Out32DplII;
+
+struct Stereo71Out16Dpl; // similar to DplII but without rear balancing
+struct Stereo71Out32Dpl;
+
 extern void ResetDplIIDecoder();
 extern void ProcessDplIISample16(const StereoOut32 &src, Stereo51Out16DplII *s);
 extern void ProcessDplIISample32(const StereoOut32 &src, Stereo51Out32DplII *s);
 extern void ProcessDplSample16(const StereoOut32 &src, Stereo51Out16Dpl *s);
 extern void ProcessDplSample32(const StereoOut32 &src, Stereo51Out32Dpl *s);
+extern void Process71DplIISample16(const StereoOut32 &src, Stereo71Out16DplII *s);
+extern void Process71DplIISample32(const StereoOut32 &src, Stereo71Out32DplII *s);
+extern void Process71DplSample16(const StereoOut32 &src, Stereo71Out16Dpl *s);
+extern void Process71DplSample32(const StereoOut32 &src, Stereo71Out32Dpl *s);
+
 
 struct StereoOut16
 {
@@ -439,6 +450,130 @@ struct Stereo71Out32
 
         LeftSide = src.Left << (SndOutVolumeShift32 - 1);
         RightSide = src.Right << (SndOutVolumeShift32 - 1);
+    }
+
+    void AdjustFrom(const StereoOut32 &src)
+    {
+        ResampleFrom(src);
+
+        Left = (s32)(Left * VolumeAdjustFL);
+        Right = (s32)(Right * VolumeAdjustFR);
+        LeftBack = (s32)(LeftBack * VolumeAdjustBL);
+        RightBack = (s32)(RightBack * VolumeAdjustBR);
+        LeftSide = (s32)(LeftBack * VolumeAdjustSL);
+        RightSide = (s32)(RightBack * VolumeAdjustSR);
+        Center = (s32)(Center * VolumeAdjustC);
+        LFE = (s32)(LFE * VolumeAdjustLFE);
+    }
+};
+
+struct Stereo71Out16DplII
+{
+    s16 Left;
+    s16 Right;
+    s16 Center;
+    s16 LFE;
+    s16 LeftBack;
+    s16 RightBack;
+    s16 LeftSide;
+    s16 RightSide;
+
+    void ResampleFrom(const StereoOut32 &src)
+    {
+        Process71DplIISample16(src, this);
+    }
+
+    void AdjustFrom(const StereoOut32 &src)
+    {
+        ResampleFrom(src);
+
+        Left = (s16)(Left * VolumeAdjustFL);
+        Right = (s16)(Right * VolumeAdjustFR);
+        LeftBack = (s16)(LeftBack * VolumeAdjustBL);
+        RightBack = (s16)(RightBack * VolumeAdjustBR);
+        LeftSide = (s16)(LeftBack * VolumeAdjustSL);
+        RightSide = (s16)(RightBack * VolumeAdjustSR);
+        Center = (s16)(Center * VolumeAdjustC);
+        LFE = (s16)(LFE * VolumeAdjustLFE);
+    }
+};
+
+struct Stereo71Out32DplII
+{
+    s32 Left;
+    s32 Right;
+    s32 Center;
+    s32 LFE;
+    s32 LeftBack;
+    s32 RightBack;
+    s32 LeftSide;
+    s32 RightSide;
+
+    void ResampleFrom(const StereoOut32 &src)
+    {
+        Process71DplIISample32(src, this);
+    }
+
+    void AdjustFrom(const StereoOut32 &src)
+    {
+        ResampleFrom(src);
+
+        Left = (s32)(Left * VolumeAdjustFL);
+        Right = (s32)(Right * VolumeAdjustFR);
+        LeftBack = (s32)(LeftBack * VolumeAdjustBL);
+        RightBack = (s32)(RightBack * VolumeAdjustBR);
+        LeftSide = (s32)(LeftBack * VolumeAdjustSL);
+        RightSide = (s32)(RightBack * VolumeAdjustSR);
+        Center = (s32)(Center * VolumeAdjustC);
+        LFE = (s32)(LFE * VolumeAdjustLFE);
+    }
+};
+
+struct Stereo71Out16Dpl
+{
+    s16 Left;
+    s16 Right;
+    s16 Center;
+    s16 LFE;
+    s16 LeftBack;
+    s16 RightBack;
+    s16 LeftSide;
+    s16 RightSide;
+
+    void ResampleFrom(const StereoOut32 &src)
+    {
+        Process71DplSample16(src, this);
+    }
+
+    void AdjustFrom(const StereoOut32 &src)
+    {
+        ResampleFrom(src);
+
+        Left = (s16)(Left * VolumeAdjustFL);
+        Right = (s16)(Right * VolumeAdjustFR);
+        LeftBack = (s16)(LeftBack * VolumeAdjustBL);
+        RightBack = (s16)(RightBack * VolumeAdjustBR);
+        LeftSide = (s16)(LeftBack * VolumeAdjustSL);
+        RightSide = (s16)(RightBack * VolumeAdjustSR);
+        Center = (s16)(Center * VolumeAdjustC);
+        LFE = (s16)(LFE * VolumeAdjustLFE);
+    }
+};
+
+struct Stereo71Out32Dpl
+{
+    s32 Left;
+    s32 Right;
+    s32 Center;
+    s32 LFE;
+    s32 LeftBack;
+    s32 RightBack;
+    s32 LeftSide;
+    s32 RightSide;
+
+    void ResampleFrom(const StereoOut32 &src)
+    {
+        Process71DplSample32(src, this);
     }
 
     void AdjustFrom(const StereoOut32 &src)

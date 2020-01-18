@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.16)
 if (openSUSE)
     # openSUSE don't install wx in a standard library system
     # path. Let's bypass the dynamic linker and hardcode the path.

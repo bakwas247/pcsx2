@@ -134,8 +134,80 @@ void ProcessDplIISample16(const StereoOut32 &src, Stereo51Out16DplII *s)
     s->Right = ss.Right >> 16;
     s->Center = ss.Center >> 16;
     s->LFE = ss.LFE >> 16;
+	s->LeftBack = ss.LeftBack >> 16;
+    s->RightBack = ss.RightBack >> 16;
+}
+
+void Process71DplIISample32(const StereoOut32 &src, Stereo71Out32DplII *s)
+{
+    float IL = src.Left / (float)(1 << (SndOutVolumeShift + 16));
+    float IR = src.Right / (float)(1 << (SndOutVolumeShift + 16));
+
+    // Calculate center channel and LFE
+    float C = (IL + IR) * 0.5f;
+    float SUB = C; // no need to lowpass, the speaker amplifier should take care of it
+
+    float L = IL - C; // Effective L/R data
+    float R = IR - C;
+
+    // Peak L/R
+    float PL = std::abs(L);
+    float PR = std::abs(R);
+
+    AccL += (PL - AccL) * 0.1f;
+    AccR += (PR - AccR) * 0.1f;
+
+    // Calculate power balance
+    float Balance = (AccR - AccL); // -1 .. 1
+
+    // If the power levels are different, then the audio is meant for the front speakers
+    float Frontness = std::abs(Balance);
+    float Rearness = 1 - Frontness; // And the other way around
+
+    // Equalize the power levels for L/R
+    float B = std::min(0.9f, std::max(-0.9f, Balance));
+
+    float VL = L / (1 - B); // if B>0, it means R>L, so increase L, else decrease L
+    float VR = R / (1 + B); // vice-versa
+
+    // 1.73+1.22 = 2.94; 2.94 = 0.34 = 0.9996; Close enough.
+    // The range for VL/VR is approximately 0..1,
+    // But in the cases where VL/VR are > 0.5, Rearness is 0 so it should never overflow.
+    const float RearScale = 0.34f * 2;
+
+    float SL = (VR * 1.73f - VL * 1.22f) * RearScale * Rearness;
+    float SR = (VR * 1.22f - VL * 1.73f) * RearScale * Rearness;
+    // Possible experiment: Play with stereo expension levels on rear
+
+    // Adjust the volume of the front speakers based on what we calculated above
+    L *= Frontness;
+    R *= Frontness;
+
+    s32 CX = (s32)(C * AddCLR);
+
+    s->Left = (s32)(L * GainL) + CX;
+    s->Right = (s32)(R * GainR) + CX;
+    s->Center = (s32)(C * GainC);
+    s->LFE = (s32)(SUB * GainLFE);
+    s->LeftBack = (s32)(SL * GainSL);
+    s->RightBack = (s32)(SR * GainSR);
+    s->LeftSide = (s32)(((SL+L)/2) * GainSL);
+    s->RightSide = (s32)(((SL+L)/2) * GainSR);
+}
+
+void Process71DplIISample16(const StereoOut32 &src, Stereo71Out16DplII *s)
+{
+    Stereo71Out32DplII ss;
+    Process71DplIISample32(src, &ss);
+
+    s->Left = ss.Left >> 16;
+    s->Right = ss.Right >> 16;
+    s->Center = ss.Center >> 16;
+    s->LFE = ss.LFE >> 16;
     s->LeftBack = ss.LeftBack >> 16;
     s->RightBack = ss.RightBack >> 16;
+    s->LeftSide = ss.LeftSide >> 16;
+    s->RightSide = ss.RightSide >> 16;
 }
 
 void ProcessDplSample32(const StereoOut32 &src, Stereo51Out32Dpl *s)
@@ -172,4 +244,44 @@ void ProcessDplSample16(const StereoOut32 &src, Stereo51Out16Dpl *s)
     s->LFE = ss.LFE >> 16;
     s->LeftBack = ss.LeftBack >> 16;
     s->RightBack = ss.RightBack >> 16;
+}
+
+void Process71DplSample32(const StereoOut32 &src, Stereo71Out32Dpl *s)
+{
+    float ValL = src.Left / (float)(1 << (SndOutVolumeShift + 16));
+    float ValR = src.Right / (float)(1 << (SndOutVolumeShift + 16));
+
+    float C = (ValL + ValR) * 0.5f; //+15.8
+    float S = (ValL - ValR) * 0.5f;
+
+    float L = ValL - C; //+15.8
+    float R = ValR - C;
+
+    float SUB = C;
+
+    s32 CX = (s32)(C * AddCLR); // +15.16
+
+    s->Left = (s32)(L * GainL) + CX; // +15.16 = +31, can grow to +32 if (GainL + AddCLR)>255
+    s->Right = (s32)(R * GainR) + CX;
+    s->Center = (s32)(C * GainC); // +15.16 = +31
+    s->LFE = (s32)(SUB * GainLFE);
+    s->LeftBack = (s32)(S * GainSL);
+    s->RightBack = (s32)(S * GainSR);
+    s->LeftSide = (s32)(((S+L)/2) * GainSL);
+    s->RightSide = (s32)(((S+R)/2) * GainSR);
+}
+
+void Process71DplSample16(const StereoOut32 &src, Stereo71Out16Dpl *s)
+{
+    Stereo71Out32Dpl ss;
+    Process71DplSample32(src, &ss);
+
+    s->Left = ss.Left >> 16;
+    s->Right = ss.Right >> 16;
+    s->Center = ss.Center >> 16;
+    s->LFE = ss.LFE >> 16;
+    s->LeftBack = ss.LeftBack >> 16;
+    s->RightBack = ss.RightBack >> 16;
+    s->LeftSide = ss.LeftSide >> 16;
+    s->RightSide = ss.RightSide >> 16;
 }
