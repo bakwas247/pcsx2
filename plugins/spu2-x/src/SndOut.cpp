@@ -296,6 +296,8 @@ template void SndBuffer::ReadSamples(Stereo51Out16 *);
 template void SndBuffer::ReadSamples(Stereo51Out16Dpl *);
 template void SndBuffer::ReadSamples(Stereo51Out16DplII *);
 template void SndBuffer::ReadSamples(Stereo71Out16 *);
+template void SndBuffer::ReadSamples(Stereo71Out16Dpl *);
+template void SndBuffer::ReadSamples(Stereo71Out16DplII *);
 
 template void SndBuffer::ReadSamples(Stereo20Out32 *);
 template void SndBuffer::ReadSamples(Stereo21Out32 *);
