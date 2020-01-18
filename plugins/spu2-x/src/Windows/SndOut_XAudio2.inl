@@ -356,9 +356,20 @@ public:
                     }
                     break;
                 default: // anything 8 or more gets the 7.1 treatment!
-                    ConLog("* SPU2 > 7.1 speaker expansion enabled.\n");
-                    m_voiceContext = std::make_unique<StreamingVoice<Stereo51Out16>>();
-                    break;
+                    switch (dplLevel) {
+                        case 0: // "normal" stereo upmix
+                            ConLog("* SPU2 > 7.1 speaker expansion enabled.\n");
+                            m_voiceContext = std::make_unique<StreamingVoice<Stereo51Out16>>();
+                            break;
+                        case 1: // basic Dpl decoder without rear stereo balancing
+                            ConLog("* SPU2 > 7.1 speaker expansion with basic ProLogic dematrixing enabled.\n");
+                            m_voiceContext = std::make_unique<StreamingVoice<Stereo71Out16Dpl>>();
+                            break;
+                        case 2: // gigas PLII
+                            ConLog("* SPU2 > 7.1 speaker expansion with experimental ProLogicII dematrixing enabled.\n");
+                            m_voiceContext = std::make_unique<StreamingVoice<Stereo71Out16DplII>>();
+                            break;
+                    }
             }
 
             m_voiceContext->Init(pXAudio2);
