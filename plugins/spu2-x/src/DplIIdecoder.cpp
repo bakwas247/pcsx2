@@ -192,7 +192,7 @@ void Process71DplIISample32(const StereoOut32 &src, Stereo71Out32DplII *s)
     s->LeftBack = (s32)(SL * GainSL);
     s->RightBack = (s32)(SR * GainSR);
     s->LeftSide = (s32)(((SL+L)/2) * GainSL);
-    s->RightSide = (s32)(((SL+L)/2) * GainSR);
+    s->RightSide = (s32)(((SR+R)/2) * GainSR);
 }
 
 void Process71DplIISample16(const StereoOut32 &src, Stereo71Out16DplII *s)
