@@ -359,7 +359,7 @@ public:
                     switch (dplLevel) {
                         case 0: // "normal" stereo upmix
                             ConLog("* SPU2 > 7.1 speaker expansion enabled.\n");
-                            m_voiceContext = std::make_unique<StreamingVoice<Stereo51Out16>>();
+                            m_voiceContext = std::make_unique<StreamingVoice<Stereo71Out16>>();
                             break;
                         case 1: // basic Dpl decoder without rear stereo balancing
                             ConLog("* SPU2 > 7.1 speaker expansion with basic ProLogic dematrixing enabled.\n");
