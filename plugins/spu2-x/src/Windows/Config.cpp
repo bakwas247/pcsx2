@@ -221,6 +221,8 @@ void CheckOutputModule(HWND window)
     EnableWindow(GetDlgItem(window, IDC_OUTCONF), IsConfigurable);
     EnableWindow(GetDlgItem(window, IDC_SPEAKERS), AudioExpansion);
     EnableWindow(GetDlgItem(window, IDC_SPEAKERS_TEXT), AudioExpansion);
+    EnableWindow(GetDlgItem(window, IDC_DPL_LEVEL), AudioExpansion);
+    EnableWindow(GetDlgItem(window, IDC_DPL_LEVEL_TEXT), AudioExpansion);
 }
 
 BOOL CALLBACK ConfigProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -253,6 +255,12 @@ BOOL CALLBACK ConfigProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             SendDialogMsg(hWnd, IDC_SPEAKERS, CB_ADDSTRING, 0, (LPARAM)L"Surround 5.1");
             SendDialogMsg(hWnd, IDC_SPEAKERS, CB_ADDSTRING, 0, (LPARAM)L"Surround 7.1");
             SendDialogMsg(hWnd, IDC_SPEAKERS, CB_SETCURSEL, numSpeakers, 0);
+
+            SendDialogMsg(hWnd, IDC_DPL_LEVEL, CB_RESETCONTENT, 0, 0);
+            SendDialogMsg(hWnd, IDC_DPL_LEVEL, CB_ADDSTRING, 0, (LPARAM)L"0");
+            SendDialogMsg(hWnd, IDC_DPL_LEVEL, CB_ADDSTRING, 0, (LPARAM)L"1");
+            SendDialogMsg(hWnd, IDC_DPL_LEVEL, CB_ADDSTRING, 0, (LPARAM)L"2");
+            SendDialogMsg(hWnd, IDC_DPL_LEVEL, CB_SETCURSEL, dplLevel, 0);
 
             SendDialogMsg(hWnd, IDC_OUTPUT, CB_RESETCONTENT, 0, 0);
 
@@ -305,6 +313,7 @@ BOOL CALLBACK ConfigProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     OutputModule = (int)SendDialogMsg(hWnd, IDC_OUTPUT, CB_GETCURSEL, 0, 0);
                     SynchMode = (int)SendDialogMsg(hWnd, IDC_SYNCHMODE, CB_GETCURSEL, 0, 0);
                     numSpeakers = (int)SendDialogMsg(hWnd, IDC_SPEAKERS, CB_GETCURSEL, 0, 0);
+                    dplLevel = (int)SendDialogMsg(hWnd, IDC_DPL_LEVEL, CB_GETCURSEL, 0, 0);
 
                     WriteSettings();
                     EndDialog(hWnd, 0);

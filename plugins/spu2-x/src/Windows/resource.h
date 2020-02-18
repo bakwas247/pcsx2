@@ -60,6 +60,8 @@
 #define IDC_PA_HOSTAPI                  1071
 #define IDC_LATENCY                     1072
 #define IDC_EXCLUSIVE                   1073
+#define IDC_DPL_LEVEL					1075
+#define IDC_DPL_LEVEL_TEXT				1075
 
 // Next default values for new objects
 // 
